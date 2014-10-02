@@ -2,7 +2,7 @@
  * function.cpp
  *
  *  Created on: 18.07.2014
- *      Author: Àíäðàíèê
+ *      Author: Андраник
  */
 #include <iostream>
 #include "function.h"
@@ -42,39 +42,40 @@ double* huk(double* x, double* h, double epsilon, double step_decrease, int n){
 		for(i = 0; i < n; i++)
 			x2[i] = x[i];
 		fun_start = fun(x2);
-		obrazec:
-		x3[0] = x1[0] + 2 * (x2[0] - x1[0]);
-		x3[1] = x1[1] + 2 * (x2[1] - x1[1]);
-		fun_start1 = fun(x3);
-		printf("obr : %5lf %5lf %5lf\n", fun(x3), x3[0], x3[1]);
-		for(i = 0; i < n; i++){
-			x_fix = x3[i];
-			x3[i] += step;
-			fun1 = fun(x3);
-			x3[i] = x_fix;
-			x3[i] -= step;
-			fun2 = fun(x3);
-			x3[i] = x_fix;
-			if(fun1 < fun_start1)
+		for( ; ;){
+			x3[0] = x1[0] + 2 * (x2[0] - x1[0]);
+			x3[1] = x1[1] + 2 * (x2[1] - x1[1]);
+			fun_start1 = fun(x3);
+			printf("obr : %5lf %5lf %5lf\n", fun(x3), x3[0], x3[1]);
+			for(i = 0; i < n; i++){
+				x_fix = x3[i];
 				x3[i] += step;
-			if(fun2 < fun_start1)
+				fun1 = fun(x3);
+				x3[i] = x_fix;
 				x3[i] -= step;
-			fun2 = fun(x3);
-			if(fun2 < fun_start){
-				for(i = 0; i < n; i++){
-					x1[i] = x2[i];
-					x2[i] = x3[i];
+				fun2 = fun(x3);
+				x3[i] = x_fix;
+				if(fun1 < fun_start1)
+					x3[i] += step;
+				if(fun2 < fun_start1)
+					x3[i] -= step;
+				fun2 = fun(x3);
+				if(fun2 < fun_start){
+					for(i = 0; i < n; i++){
+						x1[i] = x2[i];
+						x2[i] = x3[i];
+					}
+					fun_start = fun(x3);
 				}
-				fun_start = fun(x3);
-				goto obrazec;
-			}
-			else{
-				for(i = 0; i < n; i++){
-					x[i] = x2[i];
+				else{
+					for(i = 0; i < n; i++)
+						x[i] = x2[i];
 				}
 			}
+			if(fun2 >= fun_start)
+				break;
 		}
-		printf("obr : %5lf %5lf %5lf\n", fun(x3), x3[0], x3[1]);
+		printf("%5lf %5lf %5lf\n", fun(x3), x3[0], x3[1]);
 	}while((h[0] > epsilon) && (h[1] > epsilon));
 	delete []x1;
 	delete []x2;
